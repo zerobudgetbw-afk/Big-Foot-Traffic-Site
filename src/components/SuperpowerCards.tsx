@@ -10,6 +10,7 @@ interface SuperpowerCardProps {
   subtitle: string;
   accentColor: string;
   imagePrompt: string;
+  imageUrl?: string;
   icon: React.ElementType;
   index: number;
 }
@@ -21,13 +22,20 @@ const SuperpowerCard: React.FC<SuperpowerCardProps> = ({
   subtitle,
   accentColor,
   imagePrompt,
+  imageUrl: providedImageUrl,
   icon: Icon,
   index
 }) => {
-  const [imageUrl, setImageUrl] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [imageUrl, setImageUrl] = useState<string | null>(providedImageUrl || null);
+  const [isLoading, setIsLoading] = useState(!providedImageUrl);
 
   useEffect(() => {
+    if (providedImageUrl) {
+      setImageUrl(providedImageUrl);
+      setIsLoading(false);
+      return;
+    }
+    
     const loadImage = async () => {
       setIsLoading(true);
       const url = await generateServiceImage(imagePrompt);
@@ -35,7 +43,7 @@ const SuperpowerCard: React.FC<SuperpowerCardProps> = ({
       setIsLoading(false);
     };
     loadImage();
-  }, [imagePrompt]);
+  }, [imagePrompt, providedImageUrl]);
 
   return (
     <motion.div
@@ -163,6 +171,7 @@ export const SuperpowerCards: React.FC = () => {
       subtitle: "Positioning your brand as the only logical choice. We craft visual identities and narratives that command attention and premium pricing.",
       accentColor: "#FF0055", // Pink/Red
       imagePrompt: "branding",
+      imageUrl: "/identity-vision-cover.jpg",
       icon: Palette
     },
     {
